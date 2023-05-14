@@ -28,6 +28,28 @@ public class PatientController
         return "Patient Added Successfully via Body";
     }
 
+//    @PostMapping("/addPatientViaPathVariable/{patientId}")
+//    public Patient addPatient(@PathVariable("patientId")Integer patientId)
+//    {
+//
+//    }
+    //Note: While Using PathVariables i/p has to be given in address itself
+    @GetMapping("/getInfoViaPathVariable/{patientId}")
+    public Patient getInfoViaPath(@PathVariable("patientId")Integer patientId)
+    {
+        int key=patientId;
+        return patientDb.get(key);
+    }
+    @GetMapping("/getInfoViaPathVariable/{patientId}/{name}")
+    public Patient getInfoViaPath(@PathVariable("patientId")Integer patientId,@PathVariable("name")String name)
+    {
+        int key=patientId;
+        if(patientDb.containsKey(key)&& patientDb.get(key).getName().equals(name))
+        {
+            return patientDb.get(key);
+        }
+        return null;
+    }
     @GetMapping("/patientInfo")
     public Patient getInfo(@RequestParam("patientId") Integer patientId)
     {
@@ -52,10 +74,6 @@ public class PatientController
     {
         for(Patient p:patientDb.values())
         {
-//            if(name==p.getName())
-//            {
-//                return p;
-//            }
             if (p.getName().equals(name))
                 return p;
         }
@@ -73,5 +91,19 @@ public class PatientController
                 patientList.add(patient);
         }
         return patientList;
+    }
+    //Using Path Variables find list of patient having age > 22 and disease cold
+    @GetMapping("/patientListForAgeAndDisease/{age}/{disease}")
+    public List<Patient>patientList(@PathVariable("age")Integer age,@PathVariable("disease")String disease)
+    {
+        List<Patient>list=new ArrayList<>();
+        for(Patient p:patientDb.values())
+        {
+            if(p.getAge()>age && p.getDisease().equals(disease))
+            {
+                list.add(p);
+            }
+        }
+        return list;
     }
 }
