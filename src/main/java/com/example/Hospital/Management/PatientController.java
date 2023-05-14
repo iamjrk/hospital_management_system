@@ -7,10 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/Patient")
 public class PatientController
 {
     HashMap<Integer,Patient> patientDb= new HashMap<>();
-    @PostMapping("/addPatientViaParams")
+    @PostMapping("/addViaParams")
     public String addPatient(@RequestParam("patientId")Integer patientId,@RequestParam("name")String name,
                              @RequestParam("disease")String disease,@RequestParam("age")Integer age)
     {
@@ -19,7 +20,7 @@ public class PatientController
         return "Patient Added Successfully via Parameter";
     }
 
-    @PostMapping("/addPatientViaBody")
+    @PostMapping("/addViaBody")
     public String addPatient(@RequestBody Patient patient)
     {
         int key=patient.getPatientId();
@@ -50,7 +51,7 @@ public class PatientController
         }
         return null;
     }
-    @GetMapping("/patientInfo")
+    @GetMapping("/Info")
     public Patient getInfo(@RequestParam("patientId") Integer patientId)
     {
         int key=patientId;
@@ -81,7 +82,7 @@ public class PatientController
         return null;
     }
 
-    @GetMapping("/patientListGreaterThan")
+    @GetMapping("/ListGreaterThan")
     public List<Patient> makeList(@RequestParam("age")Integer age)
     {
         List<Patient> patientList= new ArrayList<>();
@@ -93,17 +94,39 @@ public class PatientController
         return patientList;
     }
     //Using Path Variables find list of patient having age > 22 and disease cold
-    @GetMapping("/patientListForAgeAndDisease/{age}/{disease}")
-    public List<Patient>patientList(@PathVariable("age")Integer age,@PathVariable("disease")String disease)
-    {
-        List<Patient>list=new ArrayList<>();
-        for(Patient p:patientDb.values())
-        {
-            if(p.getAge()>age && p.getDisease().equals(disease))
-            {
+    @GetMapping("/ListForAgeAndDisease/{age}/{disease}")
+    public List<Patient>patientList(@PathVariable("age")Integer age,@PathVariable("disease")String disease) {
+        List<Patient> list = new ArrayList<>();
+        for (Patient p : patientDb.values()) {
+            if (p.getAge() > age && p.getDisease().equals(disease)) {
                 list.add(p);
             }
         }
         return list;
+    }
+    // Update Mapping Syntax & Examples
+    @PutMapping("/updateDetails")
+    public String updatePatientDetails(@RequestBody Patient patient)
+    {
+
+        if(patientDb.containsKey(patient.getPatientId()))
+        {
+            int key= patient.getPatientId();
+            patientDb.put(key,patient);
+            return "Patient Details Update Successfully...";
+        }
+        return "Patient Details Does Not Match!!!";
+    }
+
+    //Delete Mapping Syntax & Example
+    @DeleteMapping("/delete")
+    public String deletePatientDetails(@RequestParam("patientId") Integer patientId)
+    {
+        if(patientDb.containsKey(patientId))
+        {
+            patientDb.remove(patientId);
+            return "Patient Information Deleted Successfully...";
+        }
+        return "Patient Does Not Exist!!!";
     }
 }
